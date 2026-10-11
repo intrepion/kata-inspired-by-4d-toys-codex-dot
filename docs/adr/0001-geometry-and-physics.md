@@ -1,0 +1,2 @@
+# Exact sections, bounded ball dynamics
+Use convex 4D polytopes and analytic 4D balls to make exact sections understandable and testable. Orthographic projection is a separate view; the renderer adds only a 3D camera perspective. The ball room uses 4D distances and impulses for equal-mass translating balls, with substeps and overlap correction; it has no angular dynamics, gravity, general rigid-body contacts or continuous collision detection. Polytope manipulation is kinematic. This smaller scope avoids advertising an approximate 3D solver as four-dimensional physics.

@@ -1,0 +1,4 @@
+node_modules/
+dist/
+.play-server.pid
+.play-server.log
