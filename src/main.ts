@@ -585,6 +585,7 @@ window.addEventListener("blur", () => {
   sweeping = false;
   endDrag();
   sync();
+  status("Motion and sweep paused after leaving the playground.");
 });
 document.addEventListener("visibilitychange", () => {
   if (document.hidden) {
@@ -592,6 +593,7 @@ document.addEventListener("visibilitychange", () => {
     sweeping = false;
     endDrag();
     sync();
+    status("Motion and sweep paused while this tab is hidden.");
   }
 });
 window.addEventListener("keydown", (e) => {
@@ -600,6 +602,7 @@ window.addEventListener("keydown", (e) => {
     e.preventDefault();
     paused = !paused;
     sync();
+    status(paused ? "Motion paused." : "Motion playing in four spatial dimensions.");
   }
   if (e.key === "[") el("minus").click();
   if (e.key === "]") el("plus").click();
