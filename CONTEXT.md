@@ -13,5 +13,5 @@ _Avoid_: Rotation around the fourth axis
 
 **Ball**: A solid Euclidean 4D sphere including its interior. Its slice is a 3D ball, a point, or empty.
 
-**Ball room**: A bounded 4D box containing translational balls with equal mass and frictionless elastic collisions.
+**Ball room**: A bounded 4D box containing translational equal-mass balls. Gravity play supports falling, live grabs, pushes and throws; Inertia lab uses elastic zero-gravity contacts.
 _Avoid_: Full rigid-body solver

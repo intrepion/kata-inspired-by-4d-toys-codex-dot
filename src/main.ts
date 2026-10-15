@@ -12,7 +12,8 @@ import {
   type V3,
   type Shape,
 } from "./geometry";
-import { roomBalls, stepBalls, type Ball, ROOM } from "./physics";
+import { roomBalls, stepBalls, GRAVITY_ROOM, type Ball, ROOM } from "./physics";
+import { GrabMotion } from "./grab";
 import { defaults, parseSettings, KEY, type SceneId } from "./settings";
 import "./style.css";
 const scenes = {
@@ -35,7 +36,7 @@ const scenes = {
     eyebrow: "03 / MOTION IN FOUR DIMENSIONS",
     description:
       "Set four little worlds in motion. Some collisions happen beyond your view.",
-    tip: "Press Play, then sweep w. Balls can share the same xyz view without touching, because distance also includes w. Pause to grab a ball.",
+    tip: "Press Play, then sweep w. Balls can share the same xyz view without touching, because distance also includes w. Grab while playing to push and throw. Gravity play falls along y; Inertia lab keeps the elastic zero-gravity experiment.",
   },
 };
 let state = parseSettings(readSave()),
@@ -43,7 +44,10 @@ let state = parseSettings(readSave()),
   sweeping = false,
   selected = 0,
   balls: Ball[] = [],
-  dragging = false;
+  dragging = false,
+  gravityRoom = true;
+const grab = new GrabMotion();
+let dragPointer = -1, liveDrag = false;
 function readSave() {
   try {
     return localStorage.getItem(KEY);
@@ -75,7 +79,7 @@ app.innerHTML = `<header><a class="brand" href="./"><span class="brand-mark">✳
       `<label class="rotation" for="angle-${p}"><span>${p}</span><input id="angle-${p}" type="range" min="-180" max="180" step="1"><output id="value-${p}">0°</output></label>`,
   )
   .join("")}</div>
-<label class="control-label" for="offset">Move selected toy in w <output id="offset-value"></output></label><input id="offset" type="range" min="-2" max="2" step="0.01"><div class="button-pair"><button id="minus">w − 0.2</button><button id="plus">w + 0.2</button></div><div class="nudge-controls" aria-label="Move selected toy in x and y"><button id="x-minus">x −</button><button id="x-plus">x +</button><button id="y-minus">y −</button><button id="y-plus">y +</button></div><div class="button-pair actions"><button id="pause">Play motion</button><button id="reset">Reset scene</button></div><p id="physics-note" class="explain"></p><p id="status" role="status" aria-live="polite">Saved view settings loaded (or defaults). Motion starts paused.</p></aside></main><footer><span>ELSEWHERE ATELIER</span><span>The fourth dimension is space, just like x, y and z.</span><a href="https://4dtoys.com/" target="_blank" rel="noreferrer">Inspired by the curiosity of 4D Toys ↗</a></footer>`;
+<label class="control-label" for="offset">Move selected toy in w <output id="offset-value"></output></label><input id="offset" type="range" min="-2" max="2" step="0.01"><div class="button-pair"><button id="minus">w − 0.2</button><button id="plus">w + 0.2</button></div><div class="nudge-controls" aria-label="Move selected toy in x and y"><button id="x-minus">x −</button><button id="x-plus">x +</button><button id="y-minus">y −</button><button id="y-plus">y +</button></div><div id="dynamics-wrap"><label for="dynamics">Ball-room dynamics</label><select id="dynamics"><option value="gravity">Gravity play</option><option value="inertia">Inertia lab</option></select></div><div class="button-pair actions"><button id="pause">Play motion</button><button id="reset">Reset scene</button></div><p id="physics-note" class="explain"></p><p id="status" role="status" aria-live="polite">Saved view settings loaded (or defaults). Motion starts paused.</p></aside></main><footer><span>ELSEWHERE ATELIER</span><span>The fourth dimension is space, just like x, y and z.</span><a href="https://4dtoys.com/" target="_blank" rel="noreferrer">Inspired by the curiosity of 4D Toys ↗</a></footer>`;
 function el<T extends HTMLElement = HTMLElement>(id: string) {
   return document.getElementById(id) as T;
 }
@@ -225,6 +229,7 @@ function orchardBalls(): Ball[] {
   ];
 }
 function setupScene() {
+  endDrag(true);
   balls = state.scene === "room" ? roomBalls() : orchardBalls();
   selected = 0;
   paused = true;
@@ -289,11 +294,15 @@ function sync() {
   );
   el<HTMLInputElement>("offset").value = String(offset);
   el("offset-value").textContent = offset.toFixed(2);
+  el("dynamics-wrap").hidden = state.scene !== "room";
+  el<HTMLSelectElement>("dynamics").value = gravityRoom ? "gravity" : "inertia";
   el<HTMLButtonElement>("pause").disabled = state.scene !== "room";
   el("pause").textContent = paused ? "Play motion" : "Pause motion";
   el("physics-note").textContent =
     state.scene === "room"
-      ? "4D equal-mass balls; elastic translation, discrete substeps. No rotation, gravity or full rigid-body solver. Grabbing pauses motion."
+      ? gravityRoom
+        ? "Gravity along y, damped 4D sphere contacts. Grab during play to push; release while moving to throw. Other balls keep moving. No angular or polytope solver."
+        : "Elastic zero-gravity 4D spheres. Live grab/push/throw also works here. Shapes in the study remain kinematic."
       : "Object movement is kinematic. Rotation sliders change the solid in 4D; orbiting changes only your 3D view.";
 }
 function renderToys() {
@@ -378,6 +387,7 @@ const ballVisuals = colors.map((color) => {
   return { group, mesh, wire, marker, material: mat, wireMaterial: wireMat };
 });
 function nudge(axis: 0 | 1, amount: number) {
+  endDrag(true);
   paused = true;
   if (state.scene === "study") {
     if (axis === 0)
@@ -438,11 +448,13 @@ for (const p of Object.keys(planes) as Plane[])
     renderToys();
   };
 el<HTMLSelectElement>("toy").onchange = (e) => {
+  endDrag(true);
   selected = Number((e.target as HTMLSelectElement).value);
   sync();
   renderToys();
 };
 function moveW(w: number) {
+  endDrag(true);
   const limit =
     state.scene === "room" ? Math.min(2, ROOM - balls[selected].r) : 2;
   w = Math.max(-limit, Math.min(limit, w));
@@ -461,7 +473,14 @@ el("minus").onclick = () =>
   moveW((state.scene === "study" ? state.offset : balls[selected].p[3]) - 0.2);
 el("plus").onclick = () =>
   moveW((state.scene === "study" ? state.offset : balls[selected].p[3]) + 0.2);
+el<HTMLSelectElement>("dynamics").onchange = (e) => {
+  endDrag(true);
+  gravityRoom = (e.target as HTMLSelectElement).value === "gravity";
+  setupScene();
+  status("Dynamics changed. Press Play, then grab and release a ball. Study settings are unchanged.");
+};
 el("pause").onclick = () => {
+  endDrag(true);
   paused = !paused;
   sync();
   status(
@@ -533,7 +552,7 @@ function point(e: PointerEvent) {
 renderer.domElement.addEventListener(
   "pointerdown",
   (e) => {
-    if (e.button !== 0) return;
+    if (e.button !== 0 || dragging) return;
     point(e);
     const hits = ray.intersectObjects(toys.children, true);
     let target: THREE.Object3D | undefined = hits[0]?.object;
@@ -541,8 +560,14 @@ renderer.domElement.addEventListener(
       target = target.parent ?? undefined;
     if (!target) return;
     selected = target.userData.toy;
-    paused = true;
+    liveDrag = state.scene === "room" && !paused;
+    if (state.scene !== "room") paused = true;
     dragging = true;
+    dragPointer = e.pointerId;
+    if (state.scene !== "study") {
+      balls[selected].v = [0, 0, 0, 0];
+      grab.begin(balls[selected].p, performance.now());
+    }
     controls.enabled = false;
     renderer.domElement.setPointerCapture(e.pointerId);
     const pos =
@@ -557,7 +582,7 @@ renderer.domElement.addEventListener(
   true,
 );
 renderer.domElement.addEventListener("pointermove", (e) => {
-  if (!dragging) return;
+  if (!dragging || e.pointerId !== dragPointer) return;
   point(e);
   const hit = ray.ray.intersectPlane(dragPlane, new THREE.Vector3());
   if (!hit) return;
@@ -567,23 +592,34 @@ renderer.domElement.addEventListener("pointermove", (e) => {
   hit.y = THREE.MathUtils.clamp(hit.y, -limit, limit);
   if (state.scene === "study") studyXY.set(hit.x, hit.y, 0);
   else {
-    balls[selected].p[0] = hit.x;
-    balls[selected].p[1] = hit.y;
-    balls[selected].v = [0, 0, 0, 0];
+    if (state.scene === "room") {
+      const b = balls[selected];
+      grab.move(balls, selected, [hit.x, hit.y, b.p[2], b.p[3]], performance.now(), gravityRoom ? GRAVITY_ROOM : {});
+    } else {
+      balls[selected].p[0] = hit.x;
+      balls[selected].p[1] = hit.y;
+      balls[selected].v = [0, 0, 0, 0];
+    }
   }
   renderToys();
 });
-function endDrag() {
+function endDrag(cancelled = false) {
+  if (dragging && state.scene === "room") {
+    balls[selected].v = grab.release(performance.now(), cancelled || !liveDrag);
+    status(cancelled ? "Grab cancelled. No throw." : liveDrag ? "Released into live 4D motion." : "Released. Press Play to move the room.");
+  }
   dragging = false;
+  liveDrag = false;
+  dragPointer = -1;
   controls.enabled = true;
 }
-renderer.domElement.addEventListener("pointerup", endDrag);
-renderer.domElement.addEventListener("pointercancel", endDrag);
-renderer.domElement.addEventListener("lostpointercapture", endDrag);
+renderer.domElement.addEventListener("pointerup", (e) => { if (e.pointerId === dragPointer) endDrag(); });
+renderer.domElement.addEventListener("pointercancel", () => endDrag(true));
+renderer.domElement.addEventListener("lostpointercapture", () => endDrag(true));
 window.addEventListener("blur", () => {
   paused = true;
   sweeping = false;
-  endDrag();
+  endDrag(true);
   sync();
   status("Motion and sweep paused after leaving the playground.");
 });
@@ -591,7 +627,7 @@ document.addEventListener("visibilitychange", () => {
   if (document.hidden) {
     paused = true;
     sweeping = false;
-    endDrag();
+    endDrag(true);
     sync();
     status("Motion and sweep paused while this tab is hidden.");
   }
@@ -600,6 +636,7 @@ window.addEventListener("keydown", (e) => {
   if ((e.target as HTMLElement).matches("input,select,button")) return;
   if (e.code === "Space" && state.scene === "room") {
     e.preventDefault();
+    endDrag(true);
     paused = !paused;
     sync();
     status(paused ? "Motion paused." : "Motion playing in four spatial dimensions.");
@@ -625,7 +662,8 @@ function frame(now: number) {
     dirty = true;
   }
   if (state.scene === "room" && !paused) {
-    stepBalls(balls, dt);
+    if (dragging) balls[selected].v = grab.velocity(now);
+    stepBalls(balls, dt, dragging ? selected : -1, gravityRoom ? GRAVITY_ROOM : {});
     dirty = true;
   }
   if (dirty) renderToys();
