@@ -31,3 +31,7 @@ The ball room uses 4D Euclidean normals, discrete substeps and iterative pair/wa
 The ball room now defaults to **Gravity play**. Press Play, grab a visible sphere while the others continue falling, push another sphere and release while moving to throw. Recent drag velocity is capped; holding still, cancelling a pointer or leaving the window cannot create a stale throw. The **Inertia lab** option retains elastic zero-gravity translation. Both retain true 4D distances and w slices; projection overlap alone is not contact. The study and orchard remain available.
 
 This is a bounded translational sphere toy, not a general rotating-polytope solver. Gravity acts along visible y; damping/restitution are original gameplay choices. Mode and positions are transient; existing saved view settings remain compatible. See [scope and checks](docs/fidelity-tactile.md) and [completed native acceptance](docs/LOCAL_ACCEPTANCE_2026-10-15.md). No full 4D Toys recreation is claimed.
+
+## Play online
+
+[Play the hosted game](https://intrepion.github.io/kata-inspired-by-4d-toys-codex-dot/)
