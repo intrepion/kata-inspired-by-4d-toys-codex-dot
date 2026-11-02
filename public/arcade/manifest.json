@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "gameId": "kata-inspired-by-4d-toys-codex-dot",
   "playUrl": "https://intrepion.github.io/kata-inspired-by-4d-toys-codex-dot/",
   "screenshots": [
@@ -23,6 +23,46 @@
         "sourcePath": "docs/qa/fidelity-2026-10-15/live-gravity.jpg",
         "deployedBuild": null,
         "captureDate": null
+      }
+    },
+    {
+      "path": "arcade/screenshots/ci-20261102-01.jpg",
+      "sha256": "62212b6100e285e6a6fcfc0282d5a27b9e57f9e7c28e26aeff78b8c1e38a353d",
+      "alt": "Elsewhere Atelier gameplay, view 1",
+      "provenance": {
+        "kind": "ci_gameplay_capture",
+        "sourcePath": "arcade/capture-evidence/ci-20261102-01.png",
+        "sourceSha256": "12a0bdb823dc6ee297a505a89c27eaf5f5205f54d937b070f4f418b9c9f97975",
+        "captureCommit": "3537d86fed0a9b6ce21da63a269118b7fb6a29c0",
+        "workflowRunId": "41417305300",
+        "inputHashes": {
+          "index.html": "748e9eda56ea6de0b92c8e4c8b2fc6a61aeec21526f52be40166e8e0598d32ba",
+          "assets/index-CiyBDARW.js": "856000e721ce0b223a5886eda7959a755643a4e5a5b33ec3b5775c7c88a82dc4",
+          "assets/index-qvcHnzWd.css": "54d2ede3cff2e041a094bbeaacd439d750d9188bd435b528b978b77c4a57e284"
+        },
+        "publishedFilesVerifiedAt": "2026-11-02T19:01:20Z",
+        "captureRecordPath": "arcade/capture-evidence/ci-20261102-record.json",
+        "captureRecordSha256": "c52dc23de1bdc1d44e0ef24837e886b911b5c1ad3d600aeda1eb682dff6ed5c4"
+      }
+    },
+    {
+      "path": "arcade/screenshots/ci-20261102-02.jpg",
+      "sha256": "a34783843da7b783802162630b439eafc226044fc68759cb3dde1bc49a3292d1",
+      "alt": "Elsewhere Atelier gameplay, view 2",
+      "provenance": {
+        "kind": "ci_gameplay_capture",
+        "sourcePath": "arcade/capture-evidence/ci-20261102-02.png",
+        "sourceSha256": "6c32612a4030f604c79ad2cb23a03b47efa556054094cc7d91a3e878c7c0565e",
+        "captureCommit": "3537d86fed0a9b6ce21da63a269118b7fb6a29c0",
+        "workflowRunId": "41417305300",
+        "inputHashes": {
+          "index.html": "748e9eda56ea6de0b92c8e4c8b2fc6a61aeec21526f52be40166e8e0598d32ba",
+          "assets/index-CiyBDARW.js": "856000e721ce0b223a5886eda7959a755643a4e5a5b33ec3b5775c7c88a82dc4",
+          "assets/index-qvcHnzWd.css": "54d2ede3cff2e041a094bbeaacd439d750d9188bd435b528b978b77c4a57e284"
+        },
+        "publishedFilesVerifiedAt": "2026-11-02T19:01:20Z",
+        "captureRecordPath": "arcade/capture-evidence/ci-20261102-record.json",
+        "captureRecordSha256": "c52dc23de1bdc1d44e0ef24837e886b911b5c1ad3d600aeda1eb682dff6ed5c4"
       }
     }
   ]

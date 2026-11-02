@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "workflowCommit": "5592ea06e3ea11fa4472ac21301b810d91cf4eb5",
+  "sourceCommit": "3537d86fed0a9b6ce21da63a269118b7fb6a29c0",
+  "runId": "41417305300",
+  "url": "http://127.0.0.1:4245/",
+  "inputs": {
+    "index.html": "748e9eda56ea6de0b92c8e4c8b2fc6a61aeec21526f52be40166e8e0598d32ba",
+    "assets/index-CiyBDARW.js": "856000e721ce0b223a5886eda7959a755643a4e5a5b33ec3b5775c7c88a82dc4",
+    "assets/index-qvcHnzWd.css": "54d2ede3cff2e041a094bbeaacd439d750d9188bd435b528b978b77c4a57e284"
+  },
+  "browser": "153.0.8010.12",
+  "viewport": {
+    "width": 1280,
+    "height": 1000
+  },
+  "screenshots": [
+    "elsewhere-atelier-01.png",
+    "elsewhere-atelier-02.png"
+  ]
+}
