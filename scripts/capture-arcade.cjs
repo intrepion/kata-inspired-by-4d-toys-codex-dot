@@ -1,0 +1,9 @@
+'use strict';
+const {chromium}=require('playwright');const {mkdir,readFile,writeFile,readdir}=require('node:fs/promises');const {createHash}=require('node:crypto');const path=require('node:path');
+(async()=>{const output=process.env.CAPTURE_OUTPUT||'/tmp/elsewhere-atelier-captures',site=process.env.CAPTURE_SITE||'capture-site';await mkdir(output,{recursive:true});const inputs={};for(const f of ['index.html',...(await readdir(path.join(site,'assets'))).map(x=>'assets/'+x)])inputs[f]=createHash('sha256').update(await readFile(path.join(site,f))).digest('hex');const browser=await chromium.launch({headless:true,args:['--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader']});try{
+ const page=await browser.newPage({viewport:{width:1280,height:1000},deviceScaleFactor:1,locale:'en-US',reducedMotion:'reduce'});await page.goto('http://127.0.0.1:4245/',{waitUntil:'domcontentloaded'});await page.waitForTimeout(1300); await page.locator('#projection-mode').click(); await page.locator('#angle-XW').fill('35'); await page.locator('#angle-YW').fill('25'); await page.waitForTimeout(500); await page.mouse.move(5,5);
+ await page.locator('main').screenshot({path:path.join(output,'elsewhere-atelier-01.png'),animations:'disabled'});
+ await page.locator('[data-scene="orchard"]').click(); await page.locator('#slice-mode').click(); await page.waitForTimeout(700);
+ await page.locator('main').screenshot({path:path.join(output,'elsewhere-atelier-02.png'),animations:'disabled'});
+ await writeFile(path.join(output,'capture.json'),JSON.stringify({schemaVersion:1,workflowCommit:process.env.GITHUB_SHA||null,sourceCommit:process.env.GAME_SOURCE_COMMIT||null,runId:process.env.GITHUB_RUN_ID||null,url:'http://127.0.0.1:4245/',inputs,browser:browser.version(),viewport:{width:1280,height:1000},screenshots:['elsewhere-atelier-01.png','elsewhere-atelier-02.png']},null,2)+'\n');
+ }finally{await browser.close()}})().catch(e=>{console.error(e);process.exitCode=1});
