@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "gameId": "kata-inspired-by-4d-toys-codex-dot",
+  "playUrl": "https://intrepion.github.io/kata-inspired-by-4d-toys-codex-dot/",
+  "screenshots": [
+    {
+      "path": "arcade/screenshots/view-01.jpg",
+      "sha256": "a96f6389050f2b8a6383fe6f9f9f2801c7b5d432609110b4733954a85723efeb",
+      "alt": "Gameplay capture 1",
+      "provenance": {
+        "kind": "existing_repository_capture",
+        "sourcePath": "docs/screenshots/tesseract-xw45.png",
+        "deployedBuild": null,
+        "captureDate": null
+      }
+    },
+    {
+      "path": "arcade/screenshots/view-02.jpg",
+      "sha256": "70ce8bfc4d7870cd27441df2f5bd431c98446e57a2cd91518e70d74426c643de",
+      "alt": "Gameplay capture 2",
+      "provenance": {
+        "kind": "existing_repository_capture",
+        "sourcePath": "docs/qa/fidelity-2026-10-15/live-gravity.jpg",
+        "deployedBuild": null,
+        "captureDate": null
+      }
+    }
+  ]
+}

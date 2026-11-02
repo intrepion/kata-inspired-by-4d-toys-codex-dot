@@ -35,3 +35,7 @@ This is a bounded translational sphere toy, not a general rotating-polytope solv
 ## Play online
 
 [Play the hosted game](https://intrepion.github.io/kata-inspired-by-4d-toys-codex-dot/)
+
+## Arcade metadata
+
+See [docs/arcade-metadata.md](docs/arcade-metadata.md) for the game-owned manifest and screenshot provenance.
